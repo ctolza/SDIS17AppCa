@@ -3,6 +3,7 @@ package e.kiosque.appca;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.arch.core.util.Function;
+import android.graphics.Camera;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -50,6 +51,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -71,6 +73,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
+import com.mapbox.services.android.navigation.ui.v5.camera.NavigationCamera;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 
 import java.io.IOException;
@@ -206,6 +209,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // Route
     private Boolean routeIsDisplayed = true;
     private Boolean markerSelected = false;
+
 
     //Binding View
     @BindView(R.id.recentrageDestination)
@@ -352,16 +356,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     //si on clique sur quelque chose deja
                     if (selectedFeature.size() > 0 && markerSelected) {
                         return false;
-                     }
-                     //en cas de clic sur le marker déjà selectionné on a une deselection
-                     if(features.isEmpty()){
-                         if(markerSelected){
-                             deselectLayer(selectedSymbolLayer);
-                         }
-                         return false;
-                     }
+                    }
+                    //en cas de clic sur le marker déjà selectionné on a une deselection
+                    if (features.isEmpty()) {
+                        if (markerSelected) {
+                            deselectLayer(selectedSymbolLayer);
+                        }
+                        return false;
+                    }
 
-                     //Liaison entre la source existante des peis avec la source du pei selectionné
+                    //Liaison entre la source existante des peis avec la source du pei selectionné
                     GeoJsonSource source = map.getStyle().getSourceAs("selected-marker");
                     if (source != null) {
                         source.setGeoJson(FeatureCollection.fromFeatures(
@@ -372,12 +376,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         deselectLayer(selectedSymbolLayer);
                     }
                     //Selection du Layer
-                    if(features.size() > 0){
+                    if (features.size() > 0) {
+                        String debit = "";
+                        String pression = "";
                         String title = features.get(0).getStringProperty("autrenom");
-                        String debit = features.get(0).getStringProperty("debit");
-                        String nom = features.get(0).getStringProperty("nom");
-                        String volume = features.get(0).getStringProperty("volume");
-                        Toast.makeText(MapActivity.this, title + "débit : " + debit + "volume : " + volume, Toast.LENGTH_SHORT).show();
+                        try {
+                            if (features.get(0).getStringProperty("debit_1b") != null) {
+                                debit = features.get(0).getStringProperty("debit_1b");
+                            }
+
+                            if (features.get(0).getStringProperty("pression") != null) {
+                                pression = features.get(0).getStringProperty("pression");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(MapActivity.this, title + " débit : " + debit + " pression : " + pression, Toast.LENGTH_LONG).show();
                         selectLayer(selectedSymbolLayer);
                     }
                 }
@@ -499,8 +513,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * Alls Layers initialisation
      */
     private void initSourceData() {
-
-
         initSourceERSurface();
         initSourceAndLayerEdf();
         initSourceAndLayerEdfLine();
@@ -651,7 +663,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         empriseEtareAreaLayer = (FillLayer) map.getStyle().getLayer("layerEmpriseEtare");
         empriseEtareAreaLayer.setProperties(fillColor(Color.rgb(255, 32, 32)),
                 fillOpacity((float) 0.5),
-                visibility(NONE));
+                visibility(VISIBLE));
     }
 
     private void initSourceERSurface() {
@@ -672,7 +684,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 )
                         )),
                 fillOpacity((float) 0.5),
-                visibility(NONE));
+                visibility(VISIBLE));
     }
 
     private void initSourceAndLayerSymbolER() {
@@ -855,7 +867,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 PropertyFactory.iconImage("{ty_start}"),
                 iconAllowOverlap(true),
                 iconOffset(new Float[]{-2f, -25f}),
-                textField("{autrenom}" )
+                textField("{autrenom}")
         );
 
         map.getStyle().addLayer(peiUnclSymbolLayer);
@@ -1065,7 +1077,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    // Affiche la route ou non en fonction du clic sur le bouton d'affichage du trajet
+    // Affiche la route ou non en fonction du clic sur le bouton d'affichage du trajet + recentrage
     @OnClick(R.id.btn_affichageTrajet)
     public void displayRoute() {
         if (routeIsDisplayed == true) {
@@ -1076,6 +1088,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             routeIsDisplayed = true;
             navigationMapRoute.updateRouteVisibilityTo(true);
             navigationMapRoute.updateRouteArrowVisibilityTo(true);
+            zoomOnOriginAndDestination();
         }
     }
 
@@ -1196,8 +1209,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // Map Street select
     @OnClick(R.id.btn_normal_map)
     public void normalMapActivation() {
-        map.setStyle(Style.MAPBOX_STREETS);
-        initDefaultInformationLayer();
+        map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                initSourceData();
+                initDefaultInformationLayer();
+
+                map.addOnMapClickListener(MapActivity.this);
+            }
+
+        });
         closeLayerMenu();
     }
 
