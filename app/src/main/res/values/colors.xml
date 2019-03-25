@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#c62828</color>
+    <color name="colorPrimaryDark">#8e0000</color>
+    <color name="colorPrimaryLight">#ff5f52</color>
+
+    <color name="colorSecondary">#d50000</color>
+    <color name="colorSecondaryDark">#9b0000</color>
+    <color name="colorSecondaryLight">#ff5131</color>
+
+    <color name="mapboxWhite">#ffffff</color>
+    <color name="mapBoxBlue">#4264fb</color>
+    <color name="mapBoxGreen">#4CAF50</color>
+    <color name="mapBoxRed">#AF4C4C</color>
+    <color name="mapBoxGrayLight">#c6d2e1</color>
+    <color name="gazCluster">#0cce6b</color>
+    <color name="etareCluster">#FFC857</color>
+    <color name="peiCluster">#010AE2</color>
+
+    <color name="pisteCyclable">#007e00</color>
+    <color name="ligneEdf">#000000</color>
+    <color name="ligneGaz">#f0f000</color>
+    <color name="pisteForest">#00804d</color>
+
+    <color name="defaultERcolor">#FFCA60</color>
+    <color name="habitationERcolor">#FFA0D0</color>
+
+
+    <color name="textEditError">#ef0e0e</color>
+
+    // Blue theme's colors
+    <color name="colorPrimary_blue">#45AAE9</color>
+    <color name="colorPrimaryDark_blue">#268DBA</color>
+    <color name="colorAccent_blue">#9FCCE0</color>
+    <color name="navigationRouteLine_blue">#6ECAF1</color>
+    <color name="cardHourAndPhoneTextColor_blue">#1082B2</color>
+    <color name="cardHourAndPhoneHeaderTextColor_blue">#3997C0</color>
+    <color name="colorText">#ffffff</color>
+</resources>

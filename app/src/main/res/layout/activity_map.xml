@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapActivity"
+    tools:layout_editor_absoluteY="89dp">
+
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:mapbox_cameraTargetLat="46.156259"
+        mapbox:mapbox_cameraTargetLng="-1.11568"
+        mapbox:mapbox_cameraZoom="11"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_normal_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/colorSecondary"
+            android:src="@drawable/ic_normal_map"
+            mapbox:rippleColor="@color/colorSecondary" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_ortho_photo_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/colorSecondary"
+            android:src="@drawable/ic_ortho_photo_map"
+            mapbox:rippleColor="@color/colorSecondary" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_forest_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/colorSecondary"
+            app:srcCompat="@drawable/ic_forest_map"
+            mapbox:rippleColor="@color/colorSecondary" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/colorSecondary"
+            android:src="@drawable/ic_layers_black_24dp"
+            mapbox:rippleColor="@color/colorSecondary" />
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_recentrageUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_margin="16dp"
+            mapbox:srcCompat="@drawable/recenter_user_icone" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_affichageTrajet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_margin="16dp"
+            mapbox:srcCompat="@drawable/ic_itineraire" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/recentrageDestination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            mapbox:srcCompat="@drawable/ic_fire_white" />
+    </com.mapbox.mapboxsdk.maps.MapView>
+    <TextView
+        android:id="@+id/text_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        tools:ignore="MissingConstraints" />
+</android.support.constraint.ConstraintLayout>

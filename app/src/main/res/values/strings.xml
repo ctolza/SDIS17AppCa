@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Digital SDIS17 AppCA</string>
+    <string name="access_token">pk.eyJ1IjoiY3RvbHphIiwiYSI6ImNqb281eWlsbjAxNjIza29jaXZyZDN2ZnUifQ.WTZtD9RrOdh0_BKO94j45w</string>
+    <string name="go">GO</string>
+    <string name="longitude_y">Longitude (y)</string>
+    <string name="latitude_x">Latitude (x)</string>
+    <string name="adresse">Adresse</string>
+    <string name="Main_activity_Title">Lieu d\'Intervention</string>
+    <string name="where">Ou :</string>
+    <string name="mandatory">*obligatoire</string>
+
+    <string name="blue_map_style" translatable="false">mapbox://styles/mapbox/cj7bwwv3caf7l2spgukxm8bwv</string>
+    <string name="mock_location_title">Fake device location</string>
+    <string name="information_s_curit">Information Sécurité</string>
+    <string name="ligne_edf">Ligne EDF</string>
+    <string name="transformateur_edf">Transformateur EDF</string>
+    <string name="detendeur_de_gaz">Détendeur de Gaz</string>
+    <string name="ligne_grdf">Ligne GRDF</string>
+    <string name="parametre">Paramètre</string>
+</resources>

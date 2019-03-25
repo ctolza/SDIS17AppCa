@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/zoneAVisualiser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Main_activity_Title"
+        android:textSize="35sp"
+        app:fontFamily="@font/abel"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/ou"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/where"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="13dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/latitude_x"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal"
+            android:nextFocusForward="@id/lng"/>
+
+        <EditText
+            android:id="@+id/lng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/longitude_y"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal"
+            android:nextClusterForward="@id/GoButton"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:text="@string/mandatory"
+            android:layout_weight="1"
+            android:textSize="10sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/mandatory"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:textSize="10sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/latErrorTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:text="Doit comporter 6 chiffres"
+            android:layout_weight="1"
+            android:textColor="@color/textEditError"
+            android:textSize="11sp"/>
+        <TextView
+            android:id="@+id/lngErrorTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Doit comporter 7 chiffres"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/textEditError"
+            android:textSize="11sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/adressTxt"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/main_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="32dp"
+        android:visibility="invisible"
+        />
+
+    <Button
+        android:id="@+id/GoButton"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dp"
+        android:background="@color/colorPrimary"
+        android:onClick="onClickGoButton"
+        android:text="@string/go"
+        android:textColor="@color/mapbox_navigation_view_color_primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:theme="@style/Base.Theme.MaterialComponents" />
+
+</LinearLayout>

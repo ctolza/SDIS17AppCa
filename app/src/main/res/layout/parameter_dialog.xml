@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="297dp"
+        android:layout_height="64dp"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:text="@string/information_s_curit"
+        android:textAlignment="center"
+        android:textColor="@color/colorText"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/img_ligne_edf"
+        android:layout_width="50dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/ligneEdf"
+        app:layout_constraintEnd_toStartOf="@id/txt_ligne_edf"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title" />
+    <TextView
+        android:id="@+id/txt_ligne_edf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:text="@string/ligne_edf"
+        android:textSize="16sp"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintEnd_toStartOf="@id/switch_ligne_edf"
+        app:layout_constraintStart_toEndOf="@id/img_ligne_edf"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title"
+        android:layout_marginTop="4dp"
+    />
+    <Switch
+        android:id="@+id/switch_ligne_edf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title"
+        app:layout_constraintStart_toEndOf="@id/txt_ligne_edf"
+        android:layout_marginTop="4dp"
+        />
+
+    <ImageView
+        android:id="@+id/img_tranfo_edf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="52dp"
+        android:src="@drawable/ic_transfo_edf"
+        app:layout_constraintEnd_toStartOf="@id/txt_transfo_edf"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_ligne_edf" />
+
+    <TextView
+        android:id="@+id/txt_transfo_edf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center_vertical"
+        android:text="@string/transformateur_edf"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/switch_Tranfo_edf"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@id/img_tranfo_edf"
+        app:layout_constraintTop_toBottomOf="@id/txt_ligne_edf" />
+
+    <Switch
+        android:id="@+id/switch_Tranfo_edf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/txt_transfo_edf"
+        app:layout_constraintTop_toBottomOf="@id/switch_ligne_edf" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:background="@color/mapbox_navigation_view_color_primary_text_dark"
+        app:layout_constraintTop_toBottomOf="@id/txt_transfo_edf"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <ImageView
+        android:id="@+id/img_ligne_grdf"
+        android:layout_width="0dp"
+        android:layout_height="9dp"
+        android:layout_marginTop="64dp"
+        android:background="@color/ligneGaz"
+        app:layout_constraintEnd_toStartOf="@id/txt_ligne_grdf"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_tranfo_edf" />
+
+    <TextView
+        android:id="@+id/txt_ligne_grdf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="52dp"
+        android:gravity="center_vertical"
+        android:text="@string/ligne_grdf"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/switch_ligne_grdf"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@id/img_ligne_grdf"
+        app:layout_constraintTop_toBottomOf="@id/txt_transfo_edf" />
+
+    <Switch
+        android:id="@+id/switch_ligne_grdf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/txt_ligne_grdf"
+        app:layout_constraintTop_toBottomOf="@id/switch_Tranfo_edf" />
+
+    <ImageView
+        android:id="@+id/img_detendeur_grdf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="60dp"
+        android:src="@drawable/ic_detendeur_gaz"
+        app:layout_constraintEnd_toStartOf="@id/txt_detendeur_grdf"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_ligne_grdf" />
+
+    <TextView
+        android:id="@+id/txt_detendeur_grdf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="48dp"
+        android:gravity="center_vertical"
+        android:text="@string/detendeur_de_gaz"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/switch_detendeur_grdf"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@id/img_detendeur_grdf"
+        app:layout_constraintTop_toBottomOf="@id/txt_ligne_grdf" />
+
+    <Switch
+        android:id="@+id/switch_detendeur_grdf"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/txt_detendeur_grdf"
+        app:layout_constraintTop_toBottomOf="@id/switch_ligne_grdf" />
+
+    <Button
+        android:id="@+id/btn_validation_parametre"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="#FFFFFF"
+        android:text="OK"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_detendeur_grdf" />
+
+    <Button
+        android:id="@+id/btn_cancel_parametre"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="#FFFFFF"
+        android:text="CANCEL"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/switch_detendeur_grdf"
+        tools:layout_editor_absoluteX="0dp" />
+
+</android.support.constraint.ConstraintLayout>
