@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -87,10 +87,36 @@
             android:layout_margin="16dp"
             mapbox:srcCompat="@drawable/ic_fire_white" />
     </com.mapbox.mapboxsdk.maps.MapView>
+
     <TextView
-        android:id="@+id/text_container"
+        android:id="@+id/text_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:text="Chargement des données..."
         tools:ignore="MissingConstraints" />
-</android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/scale_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="80dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="2dp"
+        android:text="100km"
+        android:visibility="invisible"
+        android:textAlignment="center">
+
+
+    </TextView>
+
+    <ProgressBar
+        android:id="@+id/progressData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        />
+</FrameLayout>
