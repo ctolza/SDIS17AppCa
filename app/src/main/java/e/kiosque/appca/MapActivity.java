@@ -2,25 +2,24 @@ package e.kiosque.appca;
 
 import android.animation.ValueAnimator;
 import android.app.Dialog;
-import android.arch.core.util.Function;
-import android.graphics.Camera;
 import android.graphics.Color;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -40,10 +39,6 @@ import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.geocoding.v5.GeocodingCriteria;
-import com.mapbox.api.geocoding.v5.MapboxGeocoding;
-import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
@@ -51,7 +46,6 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -60,26 +54,24 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.Projection;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.CircleLayer;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
-import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
-import com.mapbox.services.android.navigation.ui.v5.camera.NavigationCamera;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,24 +80,24 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import e.kiosque.appca.GeoJsonManager.GeoJsonMngr;
 import e.kiosque.appca.Lambert_conversion.LambertPoint;
+import e.kiosque.appca.Scales.ScaledMapview;
+import e.kiosque.appca.Scales.ScaledMapview.ScaleUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static android.view.View.inflate;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.bool;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.color;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.gt;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.id;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.lt;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.match;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.properties;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.stop;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
@@ -141,6 +133,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final double ZOOM_THRESHOLD_SYMBOL_LAYER = 12;
     private static final double ZOOM_THRESHOLD_AREA_LAYER = 15;
 
+    //Variable d'échelle
+    private TextView scaleText;
+    private ScaleUnit scaleUnit = ScaleUnit.KM;
+    private float labelWidth = 0.33f;
 
     //Variable de la classe Map
     private MapView mapView;
@@ -231,13 +227,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @BindView(R.id.btn_forest_map)
     FloatingActionButton buttonForestMap;
+    //Progress Bar
+    @BindView(R.id.progressData)
+    ProgressBar progressBar;
 
-    //@BindView(R.id.progressbar)
-    //ProgressBar progressBar;
-
-
-    //private int progressStatus = 0;
-    //private Handler mHandler = new Handler();
+    @BindView(R.id.text_loading)
+    TextView textLoading;
 
     private boolean lineForestLayerIsActive = false;
 
@@ -270,67 +265,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //get SDIS Position
         originPositionPoint = Point.fromLngLat(-1.11568, 46.156259);
-
         mapView.getMapAsync(this);
     }
 
-    /*private void launchDownload() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (progressStatus < 100) {
-                    android.os.SystemClock.sleep(50);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    });
-                }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-        }).start();
-
-
-    }
-
-    private void startProgress() {
-        isEndNotified = false;
-        progressBar.setIndeterminate(true);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void setPercentage(final int percentage) {
-        progressBar.setIndeterminate(false);
-        progressBar.setProgress(percentage);
-    }
-
-    private void endProgress(final String message) {
-        if (isEndNotified) {
-            return;
-        }
-
-        //Stop and hide progressBar
-        isEndNotified = true;
-        progressBar.setIndeterminate(true);
-        progressBar.setVisibility(View.GONE);
-
-        //Show a toast
-        Toast.makeText(MapActivity.this, message, Toast.LENGTH_LONG).show();
-    }
-*/
     @SuppressWarnings("MissingPermission")
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         this.map = mapboxMap;
         this.map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
-            public void onStyleLoaded(@NonNull Style style) {
+            public void onStyleLoaded(@NonNull Style style)
+            {
                 enableLocation();
                 setDestinationPoint();
                 setMissionMarker();
@@ -340,6 +285,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 initDefaultInformationLayer();
                 setCameraPosition(destinationPosition);
                 map.addOnMapClickListener(MapActivity.this);
+                //Stop Progressbar when map is loaded.
+
+                progressBar.setVisibility(View.INVISIBLE);
+                textLoading.setVisibility(View.INVISIBLE);
             }
         });
         map.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
@@ -375,6 +324,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (markerSelected) {
                         deselectLayer(selectedSymbolLayer);
                     }
+
                     //Selection du Layer
                     if (features.size() > 0) {
                         String debit = "";
@@ -401,6 +351,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.addOnCameraMoveListener(new MapboxMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
+
+                if (scaleText == null) {
+                    ViewParent v = (ViewParent) getParent();
+                    if (v instanceof FrameLayout) {
+                        scaleText = (TextView) findViewById(R.id.scale_text);
+                        ((FrameLayout) v).addView(scaleText);
+                    }
+                }
+                if (scaleText != null) {
+// compute the horizontal span in metres of the bottom of the map
+
+                }
+
                 //Log.e("ZOOM LVL : " , "" + map.getCameraPosition().zoom);
                 if (map.getCameraPosition().zoom > 12) {
                     if (peiUnclSymbolLayer != null) {
@@ -476,6 +439,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         markerSelected = true;
     }
 
+
     //Méthode quand Layer déselectionné
     private void deselectLayer(final SymbolLayer iconLayer) {
         ValueAnimator markerAnimator = new ValueAnimator();
@@ -514,6 +478,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     private void initSourceData() {
         initSourceERSurface();
+        initSourceEtareSurface();
         initSourceAndLayerEdf();
         initSourceAndLayerEdfLine();
         initSourceAndLayerPisteCyclable();
@@ -524,7 +489,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         initSourceAndLayerPisteForestiere();
         initSourceAndLayerPKCyclable();
         initSourceAndLayerSymbolER();
-        initSourceEtareSurface();
         initSourceAndLayerETARE();
         initSourcePeiPoint();
         initLayerIcons();
@@ -533,6 +497,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.getStyle().addLayer(new SymbolLayer("selected-marker-layer", "selected-marker")
                 .withProperties(PropertyFactory.iconImage("{ty_start}"),
                         iconOffset(new Float[]{0f, -9f})));
+
     }
 
     private void initDefaultInformationLayer() {
@@ -1209,6 +1174,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // Map Street select
     @OnClick(R.id.btn_normal_map)
     public void normalMapActivation() {
+        if (progressBar.getVisibility() == View.INVISIBLE && textLoading.getVisibility() == View.INVISIBLE) {
+            progressBar.setVisibility(View.VISIBLE);
+            textLoading.setVisibility(View.VISIBLE);
+        }
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -1216,6 +1185,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 initDefaultInformationLayer();
 
                 map.addOnMapClickListener(MapActivity.this);
+                progressBar.setVisibility(View.INVISIBLE);
+                textLoading.setVisibility(View.INVISIBLE);
+
             }
 
         });
@@ -1225,7 +1197,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // Map Outdoors select
     @OnClick(R.id.btn_forest_map)
     public void outDoorMapActivation() {
-
+        if (progressBar.getVisibility() == View.INVISIBLE && textLoading.getVisibility() == View.INVISIBLE) {
+            progressBar.setVisibility(View.VISIBLE);
+            textLoading.setVisibility(View.VISIBLE);
+        }
         this.map.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -1233,6 +1208,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 initDefaultForestLayer();
 
                 map.addOnMapClickListener(MapActivity.this);
+                progressBar.setVisibility(View.INVISIBLE);
+                textLoading.setVisibility(View.INVISIBLE);
+
             }
         });
         closeLayerMenu();
@@ -1241,20 +1219,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //Map ortho-photo select
     @OnClick(R.id.btn_ortho_photo_map)
     public void orthotPhotoMapActivation() {
-
+        if (progressBar.getVisibility() == View.INVISIBLE && textLoading.getVisibility() == View.INVISIBLE) {
+            progressBar.setVisibility(View.VISIBLE);
+            textLoading.setVisibility(View.VISIBLE);
+        }
         this.map.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 initSourceData();
                 initDefaultInformationLayer();
-
                 map.addOnMapClickListener(MapActivity.this);
+                progressBar.setVisibility(View.INVISIBLE);
+                textLoading.setVisibility(View.INVISIBLE);
             }
         });
-
         closeLayerMenu();
     }
+    /////////////////////////////////////////////////////////////////SCALE METHOD/////////////////////////////////////////////////////////////////////////////////
 
+    public enum ScaleUnit {
+        MILE("mile", 1609.344f),
+        NM("nm", 1852.0f),
+        KM("km", 1000.0f);
+
+        ScaleUnit(String unit, float ratio) {
+            this.unit = unit;
+            this.ratio = ratio;
+        }
+
+        String unit;
+        float ratio;
+    }
 
     ////////////////////////////////////////////////////////////////////CAMERA FOCUSING METHOD////////////////////////////////////////////////////////////////////
 
@@ -1267,6 +1262,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .include(new LatLng(destinationPosition.latitude(), destinationPosition.longitude()))
                 .build();
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50));
+
     }
 
     /**
@@ -1304,6 +1300,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void recentrageUser(View v) {
         setCameraPosition(actualLocation);
     }
+///////////////////////////////////////////////////////////////////////////////SCALE METHOD////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 ///////////////////////////////////////////////////////////////////////////////MAPBOX METHOD DEFAULT////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1535,5 +1533,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
  */
 
+/*
+LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+                    float span[] = new float[1];
+                    Location.distanceBetween(latLngBounds.getLatSouth(), latLngBounds.getLonEast(),
+                            latLngBounds.getLatSouth(), latLngBounds.getLonWest(), span);
+
+                    float totalWidth = span[0] / scaleUnit.ratio;
+                    // calculate an initial guess at step size
+                    float tempStep = totalWidth * labelWidth;
+
+                    // get the magnitude of the step size
+                    float mag = (float) Math.floor(Math.log10(tempStep));
+                    float magPow = (float) Math.pow(10, mag);
+
+                    // calculate most significant digit of the new step size
+                    float magMsd = (int) (tempStep / magPow + 0.5);
+
+                    // promote the MSD to either 1, 2, or 5
+                    if (magMsd > 5.0f)
+                        magMsd = 10.0f;
+                    else if (magMsd > 2.0f)
+                        magMsd = 5.0f;
+                    else if (magMsd > 1.0f)
+                        magMsd = 2.0f;
+                    float length = magMsd * magPow;
+                    if (length >= 1f)
+                        scaleText.setText(String.format(Locale.US, "%.0f %s", length, scaleUnit.unit));
+                    else
+                        scaleText.setText(String.format(Locale.US, "%.2f %s", length, scaleUnit.unit));
+                    // set the total width to the appropriate fraction of the display
+                    //Width change
+                    int width = Math.round(labelWidth * length / totalWidth);
+                    FrameLayout.LayoutParams layoutParams =
+                    new FrameLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+                    layoutParams.bottomMargin = 4;
+                    scaleText.setLayoutParams(layoutParams);
+ */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
